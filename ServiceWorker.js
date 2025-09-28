@@ -1,4 +1,4 @@
-const cacheName = "DefaultCompany-Tenki Weather-0.1.0";
+const cacheName = "Estella-Tenki Weather-0.1.0";
 const contentToCache = [
     "Build/Tenki-Weather.loader.js",
     "Build/Tenki-Weather.framework.js",
