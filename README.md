@@ -1,4 +1,4 @@
-# Tenki Weather
+# [Tenki Weather](https://tenki.live)
 
 > Chatbot cuaca berbahasa Indonesia dengan karakter anime **Tenki‑Chan**. Dibangun dengan **Unity 6 (6000.2.3f1)** untuk **WebGL only**. Terintegrasi **OpenAI**, **WeatherAPI.com**, **ElevenLabs (TTS)**, dan **Batch CSV/XLSX**.
 
@@ -10,29 +10,20 @@
 **Live Demo:** **[https://tenki.live](https://tenki.live)**
 **Repo:** **[https://github.com/muhammadIdhamMaarif/Tenki-Weather](https://github.com/muhammadIdhamMaarif/Tenki-Weather)**
 
-![Banner Tenki Weather (placeholder)](IMG_HERO)
+> Khusus kepada bapak Rakhmadhany Primananda, ST., M.Kom., untuk source code ***multithreading*** bisa dilihat disini [Tenki Source](https://github.com/muhammadIdhamMaarif/Tenki-Source)
+
+![Banner Tenki Weather (placeholder)](./Images/hero.gif)
 
 Tema/brand: **Light Blue Sky**
 
 ---
 
-## Galeri Pratinjau (placeholder)
+**Screenshot UI :**
 
-| Pratinjau                                                        | Keterangan                                            |
-| ---------------------------------------------------------------- | ----------------------------------------------------- |
-| ![Alur chat dan balasan cuaca (placeholder)](GIF_CHAT_FLOW)      | `<GIF_CHAT_FLOW>` — alur chat & balasan cuaca         |
-| ![Cuplikan JSON plan dari OpenAI (placeholder)](GIF_INTENT_PLAN) | `<GIF_INTENT_PLAN>` — cuplikan JSON “plan”            |
-| ![Pemutaran TTS Bahasa Indonesia (placeholder)](GIF_TTS)         | `<GIF_TTS>` — pemutaran suara Indonesia               |
-| ![Unggah CSV/XLSX (placeholder)](GIF_UPLOAD_CSV)                 | `<GIF_UPLOAD_CSV>` — unggah CSV/XLSX & status progres |
-| ![Proses paralel & retry (placeholder)](GIF_PROCESSING)          | `<GIF_PROCESSING>` — proses paralel & retry           |
-| ![Unduh hasil CSV/XLSX (placeholder)](GIF_DOWNLOAD)              | `<GIF_DOWNLOAD>` — unduh CSV/XLSX hasil               |
-| ![Aplikasi WebGL di browser (placeholder)](GIF_WEBGL)            | `<GIF_WEBGL>` — aplikasi berjalan di browser          |
-
-**Screenshot UI (placeholder):**
-
-* ![Beranda UI (placeholder)](IMG_UI_HOME)
-* ![Kartu cuaca (placeholder)](IMG_UI_WEATHER_CARD)
-* ![Dialog batch (placeholder)](IMG_UI_BATCH_DIALOG)
+![Beranda UI (placeholder)](./Images/hero.png)
+![Dialog batch (placeholder)](./Images/AlurChat.png)
+![Kartu cuaca (placeholder)](./Images/CaraPakai.png)
+![Kartu cuaca (placeholder)](./Images/UploadFile.png)
 
 ---
 
@@ -46,29 +37,33 @@ Tema/brand: **Light Blue Sky**
 * **Platform** — **WebGL only** (Unity 6 **6000.2.3f1**). Status **Production‑ready**. Lisensi **MIT**.
 * **Opsional** — **Unity Services (Cloud Code/Relay)** sebagai jalur aman alternatif untuk menyembunyikan kunci API (tanpa tutorial di README ini).
 
+![Banner Tenki Weather (placeholder)](./Images/weatherresult.gif)
+
 ---
 
 ## Arsitektur Singkat
 
 ```mermaid
 flowchart LR
-  UI[UI (Unity/WebGL)] -->|prompt user| OpenAI[OpenAI<br/>(JSON plan)]
-  OpenAI -->|intent: weather| WeatherAPI[WeatherAPI.com<br/>(current/forecast)]
+  UI["UI (Unity/WebGL)"] -->|prompt user| OpenAI["OpenAI<br/>(JSON plan)"]
+  OpenAI -->|intent: weather| WeatherAPI["WeatherAPI.com<br/>(current/forecast)"]
   WeatherAPI --> UI
-  UI -->|teks final| ElevenLabs[ElevenLabs<br/>(TTS, Bahasa Indonesia)]
+  UI -->|teks final| ElevenLabs["ElevenLabs<br/>(TTS, Bahasa Indonesia)"]
   ElevenLabs --> UI
 
   %% Jalur alternatif (opsional)
-  UI -.-> CloudCode[Unity Cloud Code / Relay<br/>(opsional, proxy kunci API)] -.-> OpenAI
+  UI -.-> CloudCode["Unity Cloud Code / Relay<br/>(opsional, proxy kunci API)"] -.-> OpenAI
   UI -.-> CloudCode -.-> WeatherAPI
   UI -.-> CloudCode -.-> ElevenLabs
 
   %% Sorot skrip utama
   subgraph Scripts
-    A[TenkiChatController<br/>(pipeline chat → cuaca → script → TTS)]
-    B[BatchWeatherProcessor<br/>(worker pool, CSV/XLSX)]
+    A["TenkiChatController<br/>(pipeline chat → cuaca → script → TTS)"]
+    B["BatchWeatherProcessor<br/>(worker pool, CSV/XLSX)"]
   end
 ```
+
+![Banner Tenki Weather (placeholder)](./Images/normaltext.gif)
 
 ---
 
@@ -101,6 +96,8 @@ flowchart LR
 Pergi ke [tenki.live](https://tenki.live)
 
 ---
+
+![Banner Tenki Weather (placeholder)](./Images/uploadfile.gif)
 
 ## Batch Mode (CSV/XLSX)
 
