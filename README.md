@@ -18,8 +18,6 @@ Tema/brand: **Light Blue Sky**
 
 ## Galeri Pratinjau (placeholder)
 
-> Ganti path gambar/GIF berikut dengan aset Anda. Jika belum ada, biarkan *(placeholder)* supaya mudah dilengkapi nanti.
-
 | Pratinjau                                                        | Keterangan                                            |
 | ---------------------------------------------------------------- | ----------------------------------------------------- |
 | ![Alur chat dan balasan cuaca (placeholder)](GIF_CHAT_FLOW)      | `<GIF_CHAT_FLOW>` — alur chat & balasan cuaca         |
@@ -54,22 +52,22 @@ Tema/brand: **Light Blue Sky**
 
 ```mermaid
 flowchart LR
-    UI[UI (Unity/WebGL)] -->|prompt user| OpenAI[OpenAI\n(JSON plan)]
-    OpenAI -->|intent: weather| WeatherAPI[WeatherAPI.com\n(current/forecast)]
-    WeatherAPI --> UI
-    UI -->|teks final| ElevenLabs[ElevenLabs\n(TTS, Bahasa Indonesia)]
-    ElevenLabs --> UI
+  UI[UI (Unity/WebGL)] -->|prompt user| OpenAI[OpenAI<br/>(JSON plan)]
+  OpenAI -->|intent: weather| WeatherAPI[WeatherAPI.com<br/>(current/forecast)]
+  WeatherAPI --> UI
+  UI -->|teks final| ElevenLabs[ElevenLabs<br/>(TTS, Bahasa Indonesia)]
+  ElevenLabs --> UI
 
-    %% Jalur alternatif (opsional)
-    UI -.-> CloudCode[Unity Cloud Code / Relay\n(opsional, proxy kunci API)] -.-> OpenAI
-    UI -.-> CloudCode -.-> WeatherAPI
-    UI -.-> CloudCode -.-> ElevenLabs
+  %% Jalur alternatif (opsional)
+  UI -.-> CloudCode[Unity Cloud Code / Relay<br/>(opsional, proxy kunci API)] -.-> OpenAI
+  UI -.-> CloudCode -.-> WeatherAPI
+  UI -.-> CloudCode -.-> ElevenLabs
 
-    %% Sorot skrip utama
-    subgraph Scripts
-      A[TenkiChatController\n(pipeline chat → cuaca → script → TTS)]
-      B[BatchWeatherProcessor\n(worker pool, CSV/XLSX)]
-    end
+  %% Sorot skrip utama
+  subgraph Scripts
+    A[TenkiChatController<br/>(pipeline chat → cuaca → script → TTS)]
+    B[BatchWeatherProcessor<br/>(worker pool, CSV/XLSX)]
+  end
 ```
 
 ---
@@ -98,42 +96,9 @@ flowchart LR
 * Akun & **API key** untuk **OpenAI**, **WeatherAPI.com**, **ElevenLabs**.
 * Target **WebGL only**.
 
-### Buka Proyek
+### Gunakan proyek
 
-```bash
-# clone repo
-git clone https://github.com/muhammadIdhamMaarif/Tenki-Weather.git
-cd Tenki-Weather
-# buka dengan Unity Hub, pilih Editor 6000.2.3f1
-```
-
-### Konfigurasi Kunci (Direct API)
-
-Atur di **Inspector → TenkiChatController**:
-
-| Field                                      | Contoh/Default                                 |
-| ------------------------------------------ | ---------------------------------------------- |
-| `OpenAIApiKey`                             | `sk-...`                                       |
-| `WeatherApiKey`                            | `xxxxxxxxxxxxxxxxx`                            |
-| `ElevenLabsApiKey`                         | `eleven-...`                                   |
-| `ElevenLabsVoiceId`                        | `B8gJV1IhpuegLxdpXFOE` (contoh)                |
-| `OpenAIChatUrl`                            | `https://api.openai.com/v1/chat/completions`   |
-| `WeatherApiBaseUrl`                        | `https://api.weatherapi.com/v1`                |
-| `ElevenLabsBaseUrl`                        | `https://api.elevenlabs.io/v1/text-to-speech/` |
-| (Opsional) `UseSecureRelay`/`RelayBaseUrl` | arahkan ke proxy/Cloud Code Anda               |
-
-> **Peringatan**: Mode **Direct API** menyimpan kunci di sisi klien **WebGL** (mudah diekstrak). Untuk produksi, gunakan **relay/Cloud Code** dan kuota terbatas/rotasi.
-
-### Build WebGL (ringkas)
-
-1. **File → Build Settings → WebGL** (Switch Platform).
-2. **Player Settings**:
-
-   * *Resolution & Presentation*: aktifkan **WebGL Compression** sesuai hosting, **Autoplay** audio mungkin **dibatasi**; siapkan pemicu suara via user gesture (klik/tap).
-   * *Publishing Settings*: sesuaikan **Data Caching** & **Linker Target** untuk ukuran & kompatibilitas.
-3. **Build** dan **deploy** ke hosting statis/CDN.
-
-Catatan iOS/Safari: audio **butuh interaksi pengguna** sebelum `AudioSource.Play()` dapat terdengar.
+Pergi ke [tenki.live](https://tenki.live)
 
 ---
 
@@ -238,10 +203,10 @@ Kontribusi terbuka! Silakan buat **issue** atau **pull request** di repo:
 
 * **Unity** — [https://unity.com](https://unity.com)
 * **TextMeshPro** — [https://docs.unity3d.com/Packages/com.unity.textmeshpro](https://docs.unity3d.com/Packages/com.unity.textmeshpro)
-* **Michsky DreamOS** — *(tautan Asset Store resmi, tambahkan di sini)*
+* **Michsky DreamOS** — [https://assetstore.unity.com/DreamOS](https://assetstore.unity.com/packages/2d/gui/dreamos-modern-os-ui-253244?srsltid=AfmBOoqs9ZOIygg3rzvf3LBOAsMDM0TIOoAqTIdEdjpameV35bDNsxLR)
 * **Animation Rigging** — [https://docs.unity3d.com/](https://docs.unity3d.com/)
-* **uLipSync** — *(tautan resmi repositori, tambahkan di sini)*
-* **Magica Cloth 2** — *(tautan Asset Store resmi, tambahkan di sini)*
+* **uLipSync** — [https://github.com/hecomi/uLipSync](https://github.com/hecomi/uLipSync)
+* **Magica Cloth 2** — [https://assetstore.unity.com/MagicaCloth2](https://assetstore.unity.com/packages/tools/physics/magica-cloth-2-242307?srsltid=AfmBOoorePMkzqyBK3qooYKPdlnEE0XuQzQjiWz35-kfA0-GYm67RAxM)
 * **OpenAI** — [https://openai.com](https://openai.com)
 * **WeatherAPI.com** — [https://www.weatherapi.com](https://www.weatherapi.com)
 * **ElevenLabs** — [https://elevenlabs.io](https://elevenlabs.io)
