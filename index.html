@@ -1,188 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--
-      Tenki Custom WebGL Template for Unity 6 (6000.2.3f1)
-      -----------------------------------------------------      
-    -->
-    <title>Tenki Weather</title>
-    <style>
-        :root {
-            /* Page brand color */
-            --page-bg: #E3FBFF; /* light blue */
-            --text: #0b0f1a;
-            --muted: rgba(0,0,0,.55);
-            --accent: #0ea5e9;
-            --accent-2: #38bdf8;
-            --track: rgba(0,0,0,.08);
-            --radius: 14px;
-        }
-
-        html, body { height: 100%; }
-        html { background: var(--page-bg); }
-        body {
-            margin: 0; height: 100%; display: grid; place-items: center; color: var(--text);
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-            /* Custom cursor (provide both png and cur/ani for broad support) */
-            cursor: url('TemplateAssets/cursor/cursor.png') 0 0, url('TemplateAssets/cursor/cursor.cur'), auto;
-        }
-
-        /* Layout */
-        .wrap { width: min(920px, 92vw); margin: 0 auto; }
-        .preload {
-            display: grid; grid-template-columns: 180px 1fr; gap: 24px; align-items: center;
-            background: rgba(255,255,255,.65); padding: 24px; border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(2, 6, 23, .08), 0 2px 6px rgba(2,6,23,.06);
-            backdrop-filter: blur(6px);
-        }
-        @media (max-width: 640px) {
-            .preload { grid-template-columns: 1fr; gap: 14px; text-align: center; }
-        }
-
-        .brand { font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; }
-        .small { color: var(--muted); font-size: .94rem; }
-
-        /* Sprite area */
-        .sprite-box {
-            width: 180px; height: 180px; border-radius: 16px; overflow: hidden;
-            display: grid; place-items: center; background: rgba(255,255,255,.8);
-            border: 1px solid rgba(2,6,23,.06);
-        }
-        .sprite-box img { width: 100%; height: 100%; object-fit: contain; image-rendering: auto; }
-
-        /* Slider progress (using native input[type=range]) */
-        .progress { display: grid; gap: 10px; }
-        .pct { font-variant-numeric: tabular-nums; font-weight: 600; }
-
-        input[type=range] {
-            -webkit-appearance: none; appearance: none; width: 100%; height: 12px;
-            background: var(--track); border-radius: 999px; outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%;
-            background: linear-gradient(180deg, var(--accent), var(--accent-2)); box-shadow: 0 2px 6px rgba(0,0,0,.2);
-            border: none; margin-top: -7px; /* align thumb vertically */
-        }
-        input[type=range]::-moz-range-thumb {
-            width: 26px; height: 26px; border-radius: 50%; border: none;
-            background: linear-gradient(180deg, var(--accent), var(--accent-2)); box-shadow: 0 2px 6px rgba(0,0,0,.2);
-        }
-        input[type=range]::-webkit-slider-runnable-track { height: 12px; border-radius: 999px; }
-        input[type=range]::-moz-range-track { height: 12px; border-radius: 999px; background: transparent; }
-
-        /* Canvas hidden until load complete */
-        #unity-canvas { display: none; width: 100vw; height: 100vh; outline: none; background: var(--page-bg); }
-
-        /* Link & misc */
-        a { color: var(--accent); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-<!-- PRELOADER -->
-<div class="wrap" id="preload">
-    <div class="preload">
-        <div class="sprite-box">
-            <!-- Replace Unity logo with your animated sprite -->
-            <img id="sprite" alt="Loading animation" src="TemplateAssets/sprite/placeholder.png" />
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | Tenki Weather</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="manifest" href="manifest.webmanifest">
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
         </div>
-        <div class="progress">
-            <div class="brand">Tenki Weather</div>
-            <div class="small" id="status">Initializing…</div>
-            <input id="slider" type="range" min="0" max="100" value="0" disabled />
-            <div class="small"><span class="pct" id="pct">0%</span> loading</div>
-        </div>
+      </div>
+      <div id="unity-warning"> </div>
     </div>
-</div>
-
-<!-- GAME CANVAS -->
-<canvas id="unity-canvas" tabindex="0"></canvas>
-
-<script>
-    // ====== CONFIGURABLE SPRITE SETTINGS ======
-    // Place frames under TemplateAssets/sprite/ following this naming pattern.
-    // You can tweak these defaults from the template by editing the values below.
-    const SPRITE_PATH = 'TemplateAssets/sprite/';
-    const SPRITE_PREFIX = 'run_';       // e.g., run_0001.png
-    const SPRITE_DIGITS = 4;            // zero-padding length
-    const SPRITE_EXT = 'png';
-    const SPRITE_FRAMES = 8;           // total number of frames
-    const SPRITE_FPS = 8;              // playback speed
-
-    // ====== UNITY BUILD SETTINGS (injected by Unity) ======
-    const buildUrl = 'Build';
-    const loaderUrl = buildUrl + '/Tenki-Weather.loader.js';
-    const config = {
-        dataUrl: buildUrl + '/Tenki-Weather.data',
-        frameworkUrl: buildUrl + '/Tenki-Weather.framework.js',
-        codeUrl: buildUrl + '/Tenki-Weather.wasm',
-        memoryUrl: buildUrl + '/',
-        symbolsUrl: buildUrl + '/',
-        companyName: 'Estella',
-        productName: 'Tenki Weather',
-        productVersion: '0.1.0'
-    };
-
-    // ====== SPRITE ANIMATION LOADER ======
-    const spriteImg = document.getElementById('sprite');
-    const slider = document.getElementById('slider');
-    const pctEl = document.getElementById('pct');
-    const statusEl = document.getElementById('status');
-    const preload = document.getElementById('preload');
-    const canvas = document.getElementById('unity-canvas');
-
-    function pad(num, size) { let s = String(num); while (s.length < size) s = '0' + s; return s; }
-
-    // Preload all frames (simple approach)
-    const frames = new Array(SPRITE_FRAMES).fill(0).map((_, i) => {
-        const img = new Image();
-        img.src = `${SPRITE_PATH}${SPRITE_PREFIX}${pad(i+1, SPRITE_DIGITS)}.${SPRITE_EXT}`;
-        return img;
-    });
-
-    let frameIndex = 0;
-    let lastTime = 0;
-    const frameTime = 1000 / SPRITE_FPS;
-
-    function animateSprite(ts) {
-        if (!lastTime) lastTime = ts;
-        const delta = ts - lastTime;
-        if (delta >= frameTime) {
-            frameIndex = (frameIndex + 1) % frames.length;
-            spriteImg.src = frames[frameIndex].src;
-            lastTime = ts;
+    <script>
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("ServiceWorker.js");
         }
-        requestAnimationFrame(animateSprite);
-    }
-    requestAnimationFrame(animateSprite);
+      });
 
-    // ====== LOAD UNITY LOADER AND CREATE INSTANCE ======
-    const script = document.createElement('script');
-    script.src = loaderUrl;
-    script.onload = () => {
-        statusEl.textContent = 'Loading assets…';
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/Tenki-Weather.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/Tenki-Weather.data",
+        frameworkUrl: buildUrl + "/Tenki-Weather.framework.js",
+        codeUrl: buildUrl + "/Tenki-Weather.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Estella",
+        productName: "Tenki Weather",
+        productVersion: "0.1.0",
+        showBanner: unityShowBanner,
+      };
+
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-            const pct = Math.round(progress * 100);
-            slider.value = pct;
-            pctEl.textContent = pct + '%';
-        }).then((instance) => {
-            // Hide HTML preloader, show the canvas when engine is ready.
-            preload.style.display = 'none';
-            canvas.style.display = 'block';
-            statusEl.textContent = 'Ready';
-
-            // NOTE: Scene loading order is controlled by Build Settings in Unity.
-            // Make sure your desired first scene (e.g., 01_Main) is at index 0.
-
-        }).catch((msg) => {
-            statusEl.textContent = 'Error loading';
-            console.error(msg);
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+        }).catch((message) => {
+          alert(message);
         });
-    };
-    document.body.appendChild(script);
-</script>
-</body>
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
 </html>
