@@ -1,0 +1,7 @@
+services:
+  tenki-weather:
+    image: syafa/tenki-weather
+    container_name: tenki-weather
+    restart: always
+    ports:
+      - "8000:80"
