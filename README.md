@@ -1,4 +1,4 @@
-# Tenki Weather [tenki.live](https://tenki.live)
+# Tenki Weather ([tenki.live](https://tenki.live))
 
 > Chatbot cuaca berbahasa Indonesia dengan karakter anime **Tenki‑Chan**. Dibangun dengan **Unity 6 (6000.2.3f1)** untuk **WebGL only**. Terintegrasi **OpenAI**, **WeatherAPI.com**, **ElevenLabs (TTS)**, dan **Batch CSV/XLSX**.
 
