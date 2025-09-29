@@ -170,13 +170,32 @@
             pctEl.textContent = pct + '%';
         }).then((instance) => {
             window.unityInstance = instance;
+
+            // UNLOCK WEB AUDIO once per page load
+            (function () {
+                function resumeUnityAudio() {
+                    try {
+                        const m = window.unityInstance && window.unityInstance.Module;
+                        // Unity 6 usually exposes the WebAudioContext here:
+                        const ctx = m && (m.webAudioContext || m['webAudioContext']);
+                        if (ctx && typeof ctx.resume === 'function' && ctx.state !== 'running') {
+                            ctx.resume().catch(() => {});
+                        }
+                    } catch (e) { console.debug(e); }
+                }
+                // Resume on first user interaction (and when returning to the tab)
+                window.addEventListener('pointerdown', resumeUnityAudio, { once: true });
+                window.addEventListener('keydown', resumeUnityAudio, { once: true });
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) resumeUnityAudio();
+                });
+            })();
+            // END UNLOCK
+
             // Hide HTML preloader, show the canvas when engine is ready.
             preload.style.display = 'none';
             canvas.style.display = 'block';
             statusEl.textContent = 'Ready';
-
-            // NOTE: Scene loading order is controlled by Build Settings in Unity.
-            // Make sure your desired first scene (e.g., 01_Main) is at index 0.
 
         }).catch((msg) => {
             statusEl.textContent = 'Error loading';
