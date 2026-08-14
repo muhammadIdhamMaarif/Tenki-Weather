@@ -1,229 +1,132 @@
-# Tenki Weather ([tenki.live](https://tenki.live))
+# Tenki Weather
 
-> Chatbot cuaca berbahasa Indonesia dengan karakter anime **Tenki‑Chan**. Dibangun dengan **Unity 6 (6000.2.3f1)** untuk **WebGL only**. Terintegrasi **OpenAI**, **WeatherAPI.com**, **ElevenLabs (TTS)**, dan **Batch CSV/XLSX**.
+> An Indonesian-language weather chatbot featuring the anime character **Tenki‑Chan**. Built with **Unity 6 (6000.2.3f1)** for **WebGL only**, with **OpenAI**, **WeatherAPI.com**, **ElevenLabs**, and **CSV/XLSX batch processing**.
 
 [![Unity 6000.2.3f1](https://img.shields.io/badge/Unity-6000.2.3f1-black?logo=unity)](#)
 [![Platform WebGL](https://img.shields.io/badge/Platform-WebGL-blue)](#)
-[![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](#lisensi)
+[![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 [![Production Ready](https://img.shields.io/badge/Status-Production--ready-brightgreen)](#)
 
-**Live Demo:** **[https://tenki.live](https://tenki.live)**
-**Repo:** **[https://github.com/muhammadIdhamMaarif/Tenki-Weather](https://github.com/muhammadIdhamMaarif/Tenki-Weather)**
+**Live Demo:** *Not maintained anymore*
 
-> Khusus kepada bapak Rakhmadhany Primananda, ST., M.Kom., untuk source code ***multithreading*** bisa dilihat disini [Tenki Source](https://github.com/muhammadIdhamMaarif/Tenki-Source)
+**Video Demo:** **[https://youtu.be/h3AnszT8V-c](https://youtu.be/h3AnszT8V-c)**  
 
-![Banner Tenki Weather (placeholder)](./Images/hero.gif)
+![Tenki Weather Banner (placeholder)](./Images/hero.gif)
 
-Tema/brand: **Light Blue Sky**
-
----
-
-**Screenshot UI :**
-
-![Beranda UI (placeholder)](./Images/hero.png)
-![Dialog batch (placeholder)](./Images/AlurChat.png)
-![Kartu cuaca (placeholder)](./Images/CaraPakai.png)
-![Kartu cuaca (placeholder)](./Images/UploadFile.png)
+Theme/brand: **Light Blue Sky**
 
 ---
 
-## Fitur
+## Features
 
-* **Intent Weather vs Chitchat** — Penentuan intent melalui **OpenAI** dengan **schema JSON-only** yang ketat.
-* **Cuaca saat ini & ramalan (forecast)** — Menggunakan **WeatherAPI.com**; resolusi lokasi via nama (mis. *Kecamatan Dukun*) atau koordinat **lat,lon**.
-* **TTS Bahasa Indonesia** — **ElevenLabs** menghasilkan audio, diputar dengan **AudioSource** di Unity.
-* **Batch Processor (CSV/XLSX)** — Unggah **CSV/XLSX**, proses paralel dengan **worker-pool** (`maxConcurrency`), **retry/backoff**, dan ekspor **CSV/XLSX** (writer minimal). Termasuk **WebGL file‑picker & download bridge**.
-* **Tenki‑Chan Avatar** — Menggunakan **Animation Rigging**, **uLipSync**, **Magica Cloth 2** untuk ekspresi, lip‑sync, dan simulasi kain.
-* **Platform** — **WebGL only** (Unity 6 **6000.2.3f1**). Status **Production‑ready**. Lisensi **MIT**.
-* **Opsional** — **Unity Services (Cloud Code/Relay)** sebagai jalur aman alternatif untuk menyembunyikan kunci API (tanpa tutorial di README ini).
+* **Weather & Chitchat Intent** — Uses **OpenAI** with a strict JSON-only schema.
+* **Current Weather & Forecasts** — Powered by **WeatherAPI.com**, using place names or `lat,lon` coordinates.
+* **Indonesian TTS** — Uses **ElevenLabs** with Unity **AudioSource**.
+* **CSV/XLSX Batch Processing** — Parallel worker pool with `maxConcurrency`, retry/backoff, and CSV/XLSX export.
+* **Tenki‑Chan Avatar** — Uses **Animation Rigging**, **uLipSync**, and **Magica Cloth 2**.
+* **WebGL Only** — Built with Unity 6 **6000.2.3f1**.
 
-![Banner Tenki Weather (placeholder)](./Images/weatherresult.gif)
+![Tenki Weather Banner (placeholder)](./Images/weatherresult.gif)
 
 ---
 
-## Arsitektur Singkat
+## Architecture
 
 ```mermaid
 flowchart LR
-  UI["UI (Unity/WebGL)"] -->|prompt user| OpenAI["OpenAI<br/>(JSON plan)"]
+  UI["UI (Unity/WebGL)"] -->|user prompt| OpenAI["OpenAI<br/>(JSON plan)"]
   OpenAI -->|intent: weather| WeatherAPI["WeatherAPI.com<br/>(current/forecast)"]
   WeatherAPI --> UI
-  UI -->|teks final| ElevenLabs["ElevenLabs<br/>(TTS, Bahasa Indonesia)"]
+  UI -->|final text| ElevenLabs["ElevenLabs<br/>(TTS, Indonesian)"]
   ElevenLabs --> UI
 
-  %% Jalur alternatif (opsional)
-  UI -.-> CloudCode["Unity Cloud Code / Relay<br/>(opsional, proxy kunci API)"] -.-> OpenAI
+  UI -.-> CloudCode["Unity Cloud Code / Relay<br/>(optional API proxy)"] -.-> OpenAI
   UI -.-> CloudCode -.-> WeatherAPI
   UI -.-> CloudCode -.-> ElevenLabs
 
-  %% Sorot skrip utama
   subgraph Scripts
-    A["TenkiChatController<br/>(pipeline chat → cuaca → script → TTS)"]
+    A["TenkiChatController<br/>(chat → weather → script → TTS)"]
     B["BatchWeatherProcessor<br/>(worker pool, CSV/XLSX)"]
   end
 ```
 
-![Banner Tenki Weather (placeholder)](./Images/normaltext.gif)
-
 ---
 
-## Teknologi
+## Technology
 
-| Komponen             | Peran                                      |
-| -------------------- | ------------------------------------------ |
-| Unity 6 (6000.2.3f1) | Engine & build WebGL                       |
-| TextMeshPro          | UI teks berkualitas                        |
-| Michsky DreamOS      | Komponen UI/UX modern (dashboard/controls) |
-| Animation Rigging    | Rigging animasi Tenki‑Chan                 |
-| uLipSync             | Lip‑sync real‑time untuk dialog            |
-| Magica Cloth 2       | Simulasi kain/aksesori karakter            |
-| OpenAI API           | Intent planning & perangkai naskah         |
-| WeatherAPI.com       | Data cuaca (current/forecast)              |
-| ElevenLabs           | TTS Bahasa Indonesia                       |
+| Component | Role |
+| --- | --- |
+| Unity 6 (6000.2.3f1) | WebGL engine/build |
+| TextMeshPro | Text UI |
+| Michsky DreamOS | UI/UX |
+| Animation Rigging | Character rigging |
+| uLipSync | Real-time lip-sync |
+| Magica Cloth 2 | Cloth/accessory simulation |
+| OpenAI API | Intent planning and response generation |
+| WeatherAPI.com | Weather data |
+| ElevenLabs | Indonesian TTS |
 
----
-
-## Mulai Cepat
-
-### Prasyarat
-
-* **Unity 6 (6000.2.3f1)**.
-* Akun & **API key** untuk **OpenAI**, **WeatherAPI.com**, **ElevenLabs**.
-* Target **WebGL only**.
-
-### Gunakan proyek
-
-Pergi ke [tenki.live](https://tenki.live)
+![Tenki Weather Banner (placeholder)](./Images/uploadfile.gif)
 
 ---
-
-![Banner Tenki Weather (placeholder)](./Images/uploadfile.gif)
 
 ## Batch Mode (CSV/XLSX)
 
-### Format Kolom Masuk
+Accepted headers:
 
-Deteksi header (regex, case‑insensitive):
-
-* **Nama**: `name|nama|kecamatan`
+* **Name**: `name|nama|kecamatan`
 * **Latitude**: `lat|latitude|lintang`
 * **Longitude**: `lon|lng|longitude|bujur`
 
-### Cara Pakai
+1. Upload a **.csv** or **.xlsx** file.
+2. Press **Process**.
+3. Download the result as **CSV** or **XLSX**.
 
-1. Klik **Upload** dan pilih berkas **.csv** atau **.xlsx**.
-2. Tekan **Process** untuk mengambil cuaca tiap baris.
-3. Unduh hasil dengan **Download CSV** atau **Download XLSX**.
+Main settings:
 
-Parameter kinerja:
+* `maxConcurrency` — parallel workers, default **48**.
+* `maxRetries` — retry attempts, default **3**.
 
-* `maxConcurrency` (default **48**) — jumlah worker paralel (disarankan **32–64** untuk WebGL, sesuaikan jaringan/hosting).
-* `maxRetries` (default **3**) — percobaan ulang untuk error sementara (429/5xx/timeouts) dengan **backoff + jitter**.
+Output columns:
 
-### Skema Keluaran
-
-Kolom: `Name, Latitude, Longitude, Last Update, Suhu (°C), Kelembapan (%), Kondisi, Kecepatan Angin (kph), Arah Angin, Sinar UV`
-
-Contoh (ringkas):
-
-| Name            | Latitude | Longitude | Last Update      | Suhu (°C) | Kelembapan (%) | Kondisi       | Kecepatan Angin (kph) | Arah Angin | Sinar UV |
-| --------------- | -------: | --------: | ---------------- | --------: | -------------: | ------------- | --------------------: | ---------- | -------: |
-| Kecamatan Dukun |    -7.12 |    112.03 | 2025-09-01 09:30 |      28.5 |             75 | Partly cloudy |                  12.4 | E (90°)    |        7 |
-
-> **Catatan:** Penulis **XLSX** di proyek ini **minimal** (sheet tunggal, teks/angka tanpa style). Cukup untuk analisis dasar & impor ke spreadsheet.
+`Name, Latitude, Longitude, Last Update, Temperature (°C), Humidity (%), Condition, Wind Speed (kph), Wind Direction, UV Index`
 
 ---
 
-## Keamanan & Biaya
+## Security
 
-> **Peringatan**: **Kunci API di WebGL dapat dilihat** oleh pengguna (Network tab/Artifacts). Gunakan **kuota khusus**, **rotasi kunci**, dan pertimbangkan **relay/Cloud Code** untuk menyuntikkan kunci di server.
+> **API keys embedded in WebGL can be inspected by users.** Use restricted quotas, rotate keys, or proxy requests through **Unity Cloud Code / Relay**.
 
-* **Rate limit**: OpenAI/WeatherAPI/ElevenLabs dapat mengembalikan **HTTP 429**. Lakukan retry/backoff.
-* **Kesalahan server**: **5xx** — coba ulang otomatis (sudah diterapkan di batch).
-* **Biaya**: perhatikan biaya LLM & TTS saat batch besar; gunakan `maxConcurrency` konservatif.
+```This is Ren from the future. The API key are all rotated and not works anymore. Go try it
+```
 
----
-
-## FAQ & Troubleshooting
-
-1. **Tidak ada suara yang keluar?**
-   Browser (terutama iOS/Safari) memerlukan **user gesture** sebelum audio dapat diputar. Pastikan pengguna klik/tap tombol lebih dulu.
-2. **CORS/HTTP diblokir?**
-   Pastikan hosting mengizinkan request ke domain API yang digunakan atau route lewat **relay** dengan CORS benar.
-3. **LLM mengembalikan JSON tidak valid?**
-   Sistem memaksa **JSON‑only**; jika gagal, ulangi prompt atau aktifkan `VerboseLogging` untuk diagnosis.
-4. **Lokasi tidak ditemukan/ambigu?**
-   Gunakan format koordinat **`lat,lon`** (mis. `-7.98,112.63`) atau nama lokasi yang lebih spesifik.
-5. **429 / Rate limit**
-   Turunkan `maxConcurrency`, tambah `maxRetries`, dan jeda ulang (**backoff**) otomatis akan membantu.
-6. **Audio patah‑patah di mobile**
-   Nonaktifkan streaming audio TTS; proyek ini **membuffer** penuh untuk stabilitas WebGL.
-7. **Ukuran build WebGL besar**
-   Aktifkan kompresi, strip kode, dan optimalkan aset (gambar, rig, audio).
-8. **Icon/cuaca tidak sesuai siang/malam**
-   Pastikan penggunaan kode kondisi & flag `is_day` dari WeatherAPI saat memetakan sprite.
+OpenAI, WeatherAPI.com, and ElevenLabs may return **HTTP 429** when rate limits are reached. Batch processing includes retry/backoff handling.
 
 ---
 
-## Contoh Prompt Pengguna
+## Screenshots
 
-1. “Cuaca **sekarang** di **Kecamatan Dukun** apa?”
-2. “**Besok** di **Bandung** hujan nggak?”
-3. “Minta **ramalan 3 hari** di **Malang**.”
-4. “Koordinat **-7.98,112.63** cuacanya gimana?”
-5. “Pakai **Fahrenheit** ya.”
-
----
-
-## Roadmap
-
-* Stream UI untuk respons LLM (typing/partial).
-* **PWA** & offline cache ikon/kamus kondisi.
-* Multi‑voice & kontrol **prosody** TTS.
-* Mode **batch forecast** (multi‑hari) + grafik ringkas.
-* **Relay/Cloud Code** template publik (tanpa kunci).
+![Home UI (placeholder)](./Images/hero.png)
+![Batch dialog (placeholder)](./Images/AlurChat.png)
+![Weather card (placeholder)](./Images/CaraPakai.png)
+![Upload file UI (placeholder)](./Images/UploadFile.png)
 
 ---
 
-## Kontribusi
+## License
 
-Kontribusi terbuka! Silakan buat **issue** atau **pull request** di repo:
-[https://github.com/muhammadIdhamMaarif/Tenki-Weather](https://github.com/muhammadIdhamMaarif/Tenki-Weather)
+**Copyright (c) Shirasaka Ren**
 
-> *Code of Conduct*: gunakan standar komunitas (mis. Contributor Covenant). Tambahkan berkas CoC jika diperlukan.
-
----
-
-## Kredit & Lisensi
-
-**Aset & Layanan Pihak Ketiga (tautan resmi):**
-
-* **Unity** — [https://unity.com](https://unity.com)
-* **TextMeshPro** — [https://docs.unity3d.com/Packages/com.unity.textmeshpro](https://docs.unity3d.com/Packages/com.unity.textmeshpro)
-* **Michsky DreamOS** — [https://assetstore.unity.com/DreamOS](https://assetstore.unity.com/packages/2d/gui/dreamos-modern-os-ui-253244?srsltid=AfmBOoqs9ZOIygg3rzvf3LBOAsMDM0TIOoAqTIdEdjpameV35bDNsxLR)
-* **Animation Rigging** — [https://docs.unity3d.com/](https://docs.unity3d.com/)
-* **uLipSync** — [https://github.com/hecomi/uLipSync](https://github.com/hecomi/uLipSync)
-* **Magica Cloth 2** — [https://assetstore.unity.com/MagicaCloth2](https://assetstore.unity.com/packages/tools/physics/magica-cloth-2-242307?srsltid=AfmBOoorePMkzqyBK3qooYKPdlnEE0XuQzQjiWz35-kfA0-GYm67RAxM)
-* **OpenAI** — [https://openai.com](https://openai.com)
-* **WeatherAPI.com** — [https://www.weatherapi.com](https://www.weatherapi.com)
-* **ElevenLabs** — [https://elevenlabs.io](https://elevenlabs.io)
-
-> **Disclaimer AI Art**: Pastikan hak pakai aset visual/AI art (termasuk model/voice) sesuai **komersial/publik** sebelum rilis.
-
-**Lisensi**: Proyek ini berada di bawah **MIT License**. Lihat bagian [Lisensi](#lisensi).
-
----
-
-## Lisensi
+Released under the **MIT License**.
 
 ```
 MIT License
 
-Hak cipta (c) Pemilik Repo
+Copyright (c) Shirasaka Ren
 
-Izin diberikan secara gratis, kepada siapa pun yang memperoleh salinan perangkat lunak ini dan file dokumentasi terkait ("Perangkat Lunak"), untuk berurusan dalam Perangkat Lunak tanpa batasan, termasuk tanpa batasan hak untuk menggunakan, menyalin, mengubah, menggabungkan, menerbitkan, mendistribusikan, melisensikan ulang, dan/atau menjual salinan Perangkat Lunak, serta untuk mengizinkan orang yang kepada siapa Perangkat Lunak disediakan untuk melakukannya, tunduk pada ketentuan berikut:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam semua salinan atau bagian substansial dari Perangkat Lunak.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN TERSIRAT, TERMASUK NAMUN TIDAK TERBATAS PADA JAMINAN DIPERDAGANGKAN, KESESUAIAN UNTUK TUJUAN TERTENTU DAN NONPELANGGARAN. DALAM KEADAAN APA PUN PARA PENULIS ATAU PEMEGANG HAK CIPTA TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU KEWAJIBAN LAINNYA, BAIK DALAM TINDAKAN KONTRAK, KESALAHAN ATAU LAINNYA, YANG TIMBUL DARI, DARI ATAU SEHUBUNGAN DENGAN PERANGKAT LUNAK ATAU PENGGUNAAN ATAU HAL LAIN DALAM PERANGKAT LUNAK.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
